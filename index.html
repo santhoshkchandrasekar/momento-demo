@@ -6,6 +6,199 @@
   <title>Momento — Demo</title>
   <link rel="icon" type="image/png" href="./just logo.png" />
   <link rel="stylesheet" href="./src/styles/app.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+/* Brochure overlay */
+#brochure-overlay {
+  position: fixed; top: 60px; left: 0; right: 0; bottom: 0;
+  z-index: 99999;
+  background: #ede5ce;
+  overflow-y: auto;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+#brochure-overlay.open { transform: translateY(0); }
+#brochure-close-btn {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px 0;
+  background: rgba(237,229,206,0.95);
+  backdrop-filter: blur(8px);
+}
+#brochure-close-btn button {
+  background: none; border: none; color: #b8a880;
+  font-size: 22px; line-height: 1; cursor: pointer; padding: 0;
+  transition: color 0.2s;
+}
+#brochure-close-btn button:hover { color: #1e1508; }
+/* ═══ BROCHURE STYLES ════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.brochure-wrap { box-sizing: border-box; }
+.brochure-wrap *, .brochure-wrap *::before, .brochure-wrap *::after { box-sizing: border-box; }
+.brochure-wrap {
+  margin-top: 0;
+  font-family: 'Playfair Display', serif;
+  color: #1e1508;
+  background-color: #ede5ce;
+  background-image:
+    radial-gradient(ellipse at 12% 25%, rgba(160,130,70,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 88% 70%, rgba(100,75,30,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(180,150,80,0.06) 0%, transparent 45%);
+}
+.brochure-wrap .fade-in { opacity: 0; }
+.brochure-wrap .fade-in.visible { animation: fadeUp 0.7s ease forwards; }
+.brochure-wrap .title-page {
+  max-width: 1100px; margin: 0 auto; padding: 0px 48px 72px; text-align: center;
+}
+.brochure-wrap .title-rule { height: 0.5px; background: linear-gradient(to right, transparent, #b8a880, transparent); margin: 0; }
+.brochure-wrap .title-rules { display: flex; flex-direction: column; gap: 5px; margin: 24px 0; }
+.brochure-wrap .book-title { font-size: 70px; font-style: italic; font-weight: 400; line-height: 1.2; color: #1e1508; margin-top: 0; margin-bottom: 10px; letter-spacing: -0.01em; }
+.brochure-wrap .book-subtitle { font-size: 23px; font-style: italic; font-family: 'Playfair Display', serif; color: #1e1508; letter-spacing: 0.04em; margin-bottom: 28px; }
+.brochure-wrap .book-title .pun { font-style: normal; font-weight: 600; color: #7a6040; }
+.brochure-wrap .book-epigraph { font-size: 19px; font-style: normal; font-weight: 400; font-family: 'Playfair Display', serif; color: #3a2e1e; line-height: 2.2; max-width: 1040px; margin: 0 auto 28px; letter-spacing: 0.01em; }
+.brochure-wrap .epigraph-highlight { font-style: italic; font-weight: 600; color: #7a6040; }
+.brochure-wrap .book-epigraph b { font-style: normal; font-weight: 500; color: #1e1508; }
+.brochure-wrap .book-tags { font-size: 17px; letter-spacing: 0.18em; color: #9a8a68; font-style: italic; margin-bottom: 40px; }
+.brochure-wrap .book-attributes { display: inline-flex; border-top: 0.5px solid #c0b088; border-bottom: 0.5px solid #c0b088; padding: 10px 0; margin-bottom: 52px; }
+.brochure-wrap .book-attr { font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: #9a8a68; padding: 0 22px; border-right: 0.5px solid #c0b088; font-family: 'DM Sans', sans-serif; }
+.brochure-wrap .book-attr:last-child { border-right: none; }
+.brochure-wrap .book-attr.ink { color: #1e1508; font-weight: 500; }
+.brochure-wrap .tricolon { display: flex; border-top: 1px solid #b8a880; padding-top: 0; }
+.brochure-wrap .tri-col { flex: 1; padding: 36px 28px; border-right: 0.5px solid rgba(192,176,136,0.25); text-align: left; position: relative; overflow: hidden; }
+.brochure-wrap .tri-col:last-child { border-right: none; }
+.brochure-wrap .tri-col:nth-child(1) { background: linear-gradient(rgba(10,6,2,0.52), rgba(10,6,2,0.52)), url('The Reality.jpg') center/cover no-repeat; }
+.brochure-wrap .tri-col:nth-child(2) { background: linear-gradient(rgba(10,6,2,0.52), rgba(10,6,2,0.52)), url('The Problem.png') center/cover no-repeat; }
+.brochure-wrap .tri-col:nth-child(3) { background: #1e1508; border-right: none; }
+.brochure-wrap .tri-bg-num { position: absolute; bottom: -18px; right: 4px; font-size: 110px; font-style: italic; font-family: 'Playfair Display', serif; color: rgba(255,255,255,0.06); line-height: 1; pointer-events: none; user-select: none; }
+.brochure-wrap .tri-col:nth-child(3) .tri-bg-num { color: rgba(255,255,255,0.04); }
+.brochure-wrap .tri-lbl { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(220,200,160,0.6); font-family: 'DM Sans', sans-serif; margin-bottom: 20px; }
+.brochure-wrap .tri-col:nth-child(3) .tri-lbl { color: rgba(192,176,136,0.55); }
+.brochure-wrap .tri-text { font-size: 16px; color: #e0d0b0; line-height: 1.9; }
+.brochure-wrap .tri-col:nth-child(3) .tri-text { font-size: 20px; font-style: italic; color: #e0cfa8; line-height: 1.75; }
+.brochure-wrap .ch-divider { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0 48px; margin: 0; }
+.brochure-wrap .ch-divider::before, .brochure-wrap .ch-divider::after { content: ''; flex: 1; height: 0.5px; background: #c0b088; }
+.brochure-wrap .ch-ornament { font-size: 20px; color: #b8a880; letter-spacing: 0.3em; padding: 0 4px; line-height: 1; }
+.brochure-wrap .ch-header { max-width: 1100px; margin: 0 auto; padding: 60px 48px 44px; text-align: center; }
+.brochure-wrap .ch-numeral { font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase; color: #9a8a68; font-family: 'DM Sans', sans-serif; margin-bottom: 18px; }
+.brochure-wrap .ch-title { font-size: 46px; font-style: italic; color: #1e1508; line-height: 1.3; margin-bottom: 20px; }
+.brochure-wrap .ch-intro { font-size: 20px; color: #5a4830; line-height: 1.95; max-width: 940px; margin: 0 auto; }
+.brochure-wrap .spaces-grid { max-width: 1100px; margin: 0 auto; padding: 0 0 72px; display: grid; grid-template-columns: 1fr 1fr; }
+.brochure-wrap .space-entry { padding: 40px 40px 36px; border-top: 1px solid #b8a880; position: relative; overflow: hidden; }
+.brochure-wrap .space-entry:nth-child(odd) { border-right: 0.5px solid #c0b088; }
+.brochure-wrap .space-entry:nth-child(1) { background: #faf6ed; }
+.brochure-wrap .space-entry:nth-child(2) { background: #f0e8d4; }
+.brochure-wrap .space-entry:nth-child(3) { border-top: 1px solid #b8a880; background: #e6dac4; }
+.brochure-wrap .space-entry:nth-child(4) { border-top: 1px solid #b8a880; background: #f5edd8; }
+.brochure-wrap .space-roman { display: none; }
+.brochure-wrap .space-keyword { font-size: 54px; font-style: italic; font-family: 'Playfair Display', serif; color: #1e1508; line-height: 1; margin-bottom: 18px; letter-spacing: -0.02em; }
+.brochure-wrap .space-keyword-num { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-family: 'DM Sans', sans-serif; color: #b8a880; font-style: normal; margin-bottom: 6px; }
+.brochure-wrap .space-desc { font-size: 16px; color: #5a4830; line-height: 1.95; }
+.brochure-wrap .space-desc b { font-weight: 600; color: #1e1508; font-style: italic; }
+.brochure-wrap .space-note { display: inline-block; margin-top: 18px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #7a6a50; font-family: 'DM Sans', sans-serif; border: 0.5px solid #c0b088; padding: 4px 12px; background: rgba(180,160,100,0.08); }
+.brochure-wrap .dark-chapter { background-color: #160e06; background-image: radial-gradient(ellipse at 20% 15%, rgba(90,55,20,0.35) 0%, transparent 50%), radial-gradient(ellipse at 80% 85%, rgba(60,35,10,0.25) 0%, transparent 50%); width: 100%; padding: 72px 48px; }
+.brochure-wrap .dark-page { max-width: 1100px; margin: 0 auto; }
+.brochure-wrap .dc-numeral { font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase; color: #4a3820; font-family: 'DM Sans', sans-serif; margin-bottom: 18px; text-align: center; }
+.brochure-wrap .dc-title { font-size: 46px; font-style: italic; color: #e0cfa8; line-height: 1.3; margin-bottom: 12px; text-align: center; }
+.brochure-wrap .dc-rule { height: 0.5px; background: linear-gradient(to right, transparent, #3a2c18, transparent); margin: 24px 0 32px; }
+.brochure-wrap .pipeline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; justify-content: center; margin-bottom: 36px; }
+.brochure-wrap .pipe-node { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: #c0a060; padding: 5px 13px; border: 0.5px solid #3a2c18; background: #1e1408; font-family: 'DM Sans', sans-serif; }
+.brochure-wrap .pipe-arrow { font-size: 18px; color: #4a3820; }
+.brochure-wrap .dc-pullquote { font-size: 18px; font-style: italic; color: #7a6848; line-height: 1.95; text-align: center; max-width: 1020px; margin: 0 auto 44px; }
+.brochure-wrap .dc-pullquote span { color: #d0b880; }
+.brochure-wrap .agents-ledger { border: 0.5px solid #3a2c18; display: grid; grid-template-columns: 1fr 1fr 1fr; margin-bottom: 28px; }
+.brochure-wrap .agent-entry { padding: 22px 18px; border-right: 0.5px solid #3a2c18; }
+.brochure-wrap .agent-entry:last-child { border-right: none; }
+.brochure-wrap .ae-num { font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #4a3820; font-family: 'DM Sans', sans-serif; margin-bottom: 6px; }
+.brochure-wrap .ae-name { font-size: 20px; font-style: italic; color: #d0b880; margin-bottom: 5px; }
+.brochure-wrap .ae-model { font-size: 13px; color: #5a4830; font-family: 'Courier New', monospace; letter-spacing: 0.06em; margin-bottom: 12px; }
+.brochure-wrap .ae-desc { font-size: 15px; color: #7a6848; line-height: 1.75; margin-bottom: 10px; }
+.brochure-wrap .ae-desc b { color: #c0a060; font-weight: 500; }
+.brochure-wrap .ae-tags { font-size: 13px; color: #4a3820; border-top: 0.5px solid #3a2c18; padding-top: 8px; }
+.brochure-wrap .ranking-inset { border: 0.5px solid #3a2c18; padding: 22px 26px; background: #0e0804; margin-bottom: 36px; }
+.brochure-wrap .ranking-head { display: flex; align-items: center; gap: 14px; border-bottom: 0.5px solid #3a2c18; padding-bottom: 12px; margin-bottom: 14px; }
+.brochure-wrap .ranking-lbl { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: #5a4830; font-family: 'DM Sans', sans-serif; }
+.brochure-wrap .ranking-tag { font-size: 13px; font-family: 'Courier New', monospace; color: #5a4830; border: 0.5px solid #3a2c18; padding: 2px 8px; }
+.brochure-wrap .ranking-formula { font-size: 18px; font-family: 'Courier New', monospace; color: #c0a060; text-align: center; margin-bottom: 12px; }
+.brochure-wrap .ranking-prose { font-size: 17px; color: #7a6848; line-height: 1.8; margin-bottom: 10px; }
+.brochure-wrap .ranking-note { font-size: 14px; color: #4a3820; border-left: 1px solid #3a2c18; padding-left: 12px; font-family: 'Courier New', monospace; letter-spacing: 0.04em; }
+.brochure-wrap .fig-label { font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #4a3820; font-family: 'DM Sans', sans-serif; margin-bottom: 10px; }
+.brochure-wrap .sig-box { display: flex; align-items: flex-start; gap: 22px; border: 0.5px solid #3a2c18; padding: 22px; background: #0e0804; margin-top: 28px; }
+.brochure-wrap .sig-lbl { font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #c0a060; font-family: 'DM Sans', sans-serif; margin-bottom: 8px; }
+.brochure-wrap .sig-text { font-size: 17px; color: #d0c0a0; line-height: 1.8; margin-bottom: 8px; }
+.brochure-wrap .sig-key { font-size: 15px; color: #7a6848; line-height: 1.7; }
+.brochure-wrap .appendix-page { max-width: 1100px; margin: 0 auto; padding: 64px 48px 72px; }
+.brochure-wrap .appendix-lbl { font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase; color: #9a8a68; font-family: 'DM Sans', sans-serif; text-align: center; margin-bottom: 14px; }
+.brochure-wrap .appendix-title { font-size: 41px; font-style: italic; color: #1e1508; text-align: center; margin-bottom: 44px; line-height: 1.3; }
+.brochure-wrap .tech-ledger { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+.brochure-wrap .tech-ledger tr { border-bottom: 0.5px solid #c0b088; }
+.brochure-wrap .tech-ledger tr:first-child { border-top: 1px solid #8a7060; }
+.brochure-wrap .tech-ledger tr:last-child { border-bottom: 1px solid #8a7060; }
+.brochure-wrap .tech-ledger td { padding: 16px 0; vertical-align: top; }
+.brochure-wrap .tl-layer { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: #9a8a68; font-family: 'DM Sans', sans-serif; width: 120px; padding-right: 24px; padding-top: 18px; }
+.brochure-wrap .tl-name { font-size: 22px; font-style: italic; color: #1e1508; margin-bottom: 8px; }
+.brochure-wrap .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.brochure-wrap .chip { font-size: 13px; padding: 2px 8px; border: 0.5px solid #c0b088; color: #7a6a50; background: rgba(180,160,100,0.1); font-family: 'Courier New', monospace; }
+.brochure-wrap .appendix-note { font-size: 17px; font-style: italic; color: #8a7a60; line-height: 1.85; text-align: center; border-top: 0.5px solid #c0b088; padding-top: 20px; }
+.brochure-wrap .colophon { background-color: #160e06; background-image: radial-gradient(ellipse at 50% 0%, rgba(80,50,20,0.4) 0%, transparent 60%); padding: 60px 48px 52px; text-align: center; }
+.brochure-wrap .colophon-tagline { font-size: 25px; font-style: italic; color: #7a6040; margin: 20px 0 24px; }
+.brochure-wrap .colophon-rule { width: 48px; height: 0.5px; background: #3a2c18; margin: 0 auto 20px; }
+.brochure-wrap .colophon-contact { font-size: 14px; color: #4a3820; letter-spacing: 0.1em; font-family: 'DM Sans', sans-serif; line-height: 2.2; }
+.brochure-wrap .colophon-contact span { color: #7a6040; }
+.brochure-wrap .privacy-inset { border-top: 1px solid #3a2c18; border-bottom: 0.5px solid #3a2c18; padding: 28px 0 24px; margin-top: 28px; }
+.brochure-wrap .privacy-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.brochure-wrap .privacy-lbl { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: #4a3820; font-family: 'DM Sans', sans-serif; }
+.brochure-wrap .privacy-icon { font-size: 15px; color: #3a2c18; }
+.brochure-wrap .privacy-lines { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.brochure-wrap .privacy-line { font-size: 17px; color: #7a6848; line-height: 1.85; padding: 10px 20px 10px 0; border-bottom: 0.5px solid #3a2c18; }
+.brochure-wrap .privacy-line:nth-child(even) { padding-left: 20px; padding-right: 0; border-left: 0.5px solid #3a2c18; }
+.brochure-wrap .privacy-line:nth-last-child(-n+2) { border-bottom: none; }
+.brochure-wrap .privacy-closer { font-style: normal; color: #c0a060; font-size: 17px; }
+.brochure-wrap .logo-accordion-wrap { max-width: 1100px; margin: 0 auto; padding: 0 48px 52px; }
+.brochure-wrap .logo-accordion-btn { display: flex; align-items: center; justify-content: center; gap: 12px; background: none; border: none; border-top: 0.5px solid #c0b088; border-bottom: 0.5px solid #c0b088; width: 100%; padding: 14px 0; cursor: pointer; font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: #9a8a68; font-family: 'DM Sans', sans-serif; text-align: center; }
+.brochure-wrap .logo-accordion-btn:hover { color: #1e1508; }
+.brochure-wrap .logo-acc-arrow { font-size: 14px; transition: transform 0.35s ease; color: #b8a880; }
+.brochure-wrap .logo-accordion-btn[aria-expanded="true"] .logo-acc-arrow { transform: rotate(180deg); }
+.brochure-wrap .logo-accordion-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease; }
+.brochure-wrap .logo-accordion-body.open { grid-template-rows: 1fr; }
+.brochure-wrap .logo-points { overflow: hidden; padding: 0; transition: padding 0.4s ease; }
+.brochure-wrap .logo-accordion-body.open .logo-points { padding: 36px 0 8px; }
+.brochure-wrap .logo-point { display: flex; gap: 28px; padding: 24px 0; border-bottom: 0.5px solid #c0b088; }
+.brochure-wrap .logo-point:last-child { border-bottom: none; }
+.brochure-wrap .logo-point-num { font-size: 13px; font-style: italic; color: #b8a880; font-family: 'Playfair Display', serif; min-width: 20px; padding-top: 3px; }
+.brochure-wrap .logo-point-title { font-size: 17px; font-style: italic; color: #1e1508; margin-bottom: 10px; font-family: 'Playfair Display', serif; }
+.brochure-wrap .logo-point-text { font-size: 15px; color: #5a4830; line-height: 1.9; font-family: 'Playfair Display', serif; }
+.brochure-wrap .logo-key { font-style: normal; font-weight: 500; font-family: 'DM Sans', sans-serif; font-size: 13px; letter-spacing: 0.06em; }
+.brochure-wrap .logo-key.green { color: #5a7a50; }
+.brochure-wrap .logo-key.red { color: #7a4040; }
+.brochure-wrap .logo-key.grey { color: #7a7060; }
+.brochure-wrap .logo-point-img { flex-shrink: 0; width: 200px; display: flex; align-items: center; justify-content: center; border-left: 0.5px solid #c0b088; padding-left: 24px; margin-left: 12px; }
+.brochure-wrap .logo-point-img img { width: 100%; height: auto; display: block; border: 0.5px solid #c0b088; }
+@media (max-width: 680px) {
+  .brochure-wrap .title-page, .brochure-wrap .ch-header, .brochure-wrap .appendix-page { padding-left: 24px; padding-right: 24px; }
+  .brochure-wrap .book-title { font-size: 49px; }
+  .brochure-wrap .book-subtitle { font-size: 16px; white-space: normal; }
+  .brochure-wrap .book-epigraph { font-size: 16px; }
+  .brochure-wrap .ch-title { font-size: 32px; }
+  .brochure-wrap .spaces-grid { grid-template-columns: 1fr; padding: 0 0 56px; }
+  .brochure-wrap .space-entry { padding: 28px 24px 24px; }
+  .brochure-wrap .space-entry:nth-child(odd) { border-right: none; }
+  .brochure-wrap .space-keyword { font-size: 38px; }
+  .brochure-wrap .agents-ledger { grid-template-columns: 1fr; }
+  .brochure-wrap .agent-entry { border-right: none; border-bottom: 0.5px solid #3a2c18; }
+  .brochure-wrap .tricolon { flex-direction: column; }
+  .brochure-wrap .tri-col { border-right: none; border-bottom: 0.5px solid #c0b088; padding-bottom: 20px; }
+  .brochure-wrap .privacy-lines { grid-template-columns: 1fr; }
+  .brochure-wrap .dark-chapter { padding: 56px 24px; }
+  .brochure-wrap .logo-point { flex-direction: column; gap: 16px; }
+  .brochure-wrap .logo-point-img { width: 100% !important; max-width: 200px; align-self: center; }
+  #brochure-tagline span { font-size: 15px !important; }
+}
+  </style>
 </head>
 <body>
   <div id="root"></div>
@@ -33,5 +226,431 @@
     } catch(e) {}
   </script>
   <script src="./src/app.compiled.js?v=68"></script>
+
+
+  <!-- Enter button — top right, visible on opening page & in brochure gap -->
+  <div id="gap-enter" onclick="triggerEnter()" style="
+    position: fixed; top: 18px; right: 20px; z-index: 99999;
+    display: none; align-items: center; cursor: pointer;">
+    <span style="
+      font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: rgba(240,192,64,0.78);
+      border-bottom: 1px solid rgba(240,192,64,0.78);
+      padding-bottom: 3px;
+      text-shadow: 0 4px 16px rgba(0,0,0,0.1);">Enter</span>
+  </div>
+
+  <!-- gap strip shown when brochure is open -->
+  <div id="brochure-tagline" style="
+    position: fixed; top: 0; left: 0; right: 0; height: 60px;
+    z-index: 99998;
+    display: flex; align-items: center;
+    padding: 0 20px;
+    opacity: 0; transition: opacity 0.5s ease; pointer-events: none;">
+    <div style="flex:1; display:flex; justify-content:center;">
+      <span style="font-family:'Playfair Display',serif; font-size:22px; font-style:italic; letter-spacing:0.04em; color:rgba(255,248,234,0.92);">Read Moments Worth Sharing</span>
+    </div>
+  </div>
+
+  <!-- trigger button — hidden until opening page is confirmed visible -->
+  <div id="scroll-down-btn" onclick="openBrochure()"
+    style="position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:9999; cursor:pointer;
+           background:rgba(30,21,8,0.82); border:0.5px solid rgba(192,176,136,0.4); border-radius:30px;
+           padding:10px 22px; display:none; align-items:center; gap:8px;
+           font-family:'DM Sans',sans-serif; font-size:12px; letter-spacing:0.14em; color:#ffffff;
+           text-transform:uppercase; backdrop-filter:blur(6px);">
+    <span>what's Momento?</span>
+    <span style="font-size:16px; line-height:1;">↓</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       BROCHURE OVERLAY
+  ═══════════════════════════════════════════ -->
+  <div id="brochure-overlay">
+    <div id="brochure-close-btn">
+      <button onclick="closeBrochure()">↓</button>
+    </div>
+    <div class="brochure-wrap">
+
+    <!-- INTRO VIDEO -->
+    <div style="width:100%;padding:0;display:flex;align-items:center;justify-content:center;">
+      <div style="width:min(860px,92vw);aspect-ratio:16/9;border-radius:12px;overflow:hidden;box-shadow:0 16px 56px rgba(0,0,0,0.55);background:#0e0804;">
+        <iframe id="brochure-yt" src="" title="Momento Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;display:block;border:none;"></iframe>
+      </div>
+    </div>
+
+    <!-- TITLE PAGE -->
+    <div class="title-page fade-in">
+      <h1 class="book-title">A gen'<span class="pun">New</span>'uine</h1>
+      <div class="book-subtitle"><b>Reading</b>, <b>Reflecting</b>, and <b>Socialising</b> platform</div>
+      <p class="book-epigraph">
+        Reading's greatest reward is thoughts and emotions.<br>
+        And only when they are shared, do they come alive.<br>
+        We find you <span class="epigraph-highlight">Close Readers</span> who you can share them with.
+      </p>
+      <div class="book-attributes">
+        <div class="book-attr">Focused</div>
+        <div class="book-attr">Intimate</div>
+        <div class="book-attr ink">AI-weighed</div>
+      </div>
+      <div class="tricolon">
+        <div class="tri-col fade-in">
+          <div class="tri-bg-num">I</div>
+          <div class="tri-lbl">The Reality</div>
+          <div class="tri-text">Reading is declining globally. Either books are being heard or they are untouched. Both are kicking the art form out of the world.</div>
+        </div>
+        <div class="tri-col fade-in">
+          <div class="tri-bg-num">II</div>
+          <div class="tri-lbl">The Problem</div>
+          <div class="tri-text">In this fast-paced world, the rewards of reading are buried deep under the social media pile.</div>
+        </div>
+        <div class="tri-col fade-in">
+          <div class="tri-bg-num">III</div>
+          <div class="tri-lbl">The Solution</div>
+          <div class="tri-text">What if your reflections on what you read shaped who you meet?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER I -->
+    <div class="ch-divider"><div class="ch-ornament">✦ &nbsp; ✦ &nbsp; ✦</div></div>
+    <div class="ch-header fade-in">
+      <div class="ch-numeral">Chapter I</div>
+      <h2 class="ch-title">Four spaces, one reading life.</h2>
+      <p class="ch-intro">READ MOMENTS WORTH SHARING is not just momento's tagline. It's the bones too.</p>
+    </div>
+    <div class="spaces-grid">
+      <div class="space-entry fade-in">
+        <div class="space-keyword-num">01</div>
+        <div class="space-keyword">Read</div>
+        <p class="space-desc">A warm and private library of books to capture passages that move you.</p>
+      </div>
+      <div class="space-entry fade-in">
+        <div class="space-keyword-num">02</div>
+        <div class="space-keyword">Moments</div>
+        <p class="space-desc">All your captured passages become Moments — add your own thoughts and feelings to make them momentos.</p>
+      </div>
+      <div class="space-entry fade-in">
+        <div class="space-keyword-num">03</div>
+        <div class="space-keyword">Worth</div>
+        <p class="space-desc">Your momentos silently find readers worth being close to.</p>
+        <span class="space-note">✦ Weighed by AI</span>
+      </div>
+      <div class="space-entry fade-in">
+        <div class="space-keyword-num">04</div>
+        <div class="space-keyword">Sharing</div>
+        <p class="space-desc">As you shape your Close circle here, sharing becomes more genuine than performative.</p>
+        <span class="space-note">Reinforcement Learning</span>
+      </div>
+    </div>
+
+    <!-- CHAPTER II -->
+    <div class="dark-chapter">
+      <div class="dark-page">
+        <div class="dc-numeral fade-in">Chapter II</div>
+        <h2 class="dc-title fade-in">Two agents. Your reader circle, ranked.</h2>
+        <div class="dc-rule"></div>
+        <div class="pipeline fade-in">
+          <div class="pipe-node">Interpretation</div><span class="pipe-arrow">→</span>
+          <div class="pipe-node">Decomposing Agent</div><span class="pipe-arrow">→</span>
+          <div class="pipe-node">Compatibility Agent</div><span class="pipe-arrow">→</span>
+          <div class="pipe-node">Aggregator</div><span class="pipe-arrow">→</span>
+          <div class="pipe-node">Ranking</div><span class="pipe-arrow">→</span>
+          <div class="pipe-node">Worth Page</div>
+        </div>
+        <p class="dc-pullquote fade-in">
+          Each interpretation is decomposed into weighted sub-claims, scored across
+          <span>Resonate, Contradict, and Diverge</span> independently for thought and feeling,<br>
+          then ranked against other readers using a <span>reinforcement learning</span> model
+          that improves with every interaction.
+        </p>
+        <div class="agents-ledger">
+          <div class="agent-entry fade-in">
+            <div class="ae-num">01 · Decomposing Agent</div>
+            <div class="ae-name">The Interpreter</div>
+            <div class="ae-model">gemini-2.5-flash</div>
+            <p class="ae-desc">Breaks each reader's interpretation into weighted <b>sub-claims</b>, each assigned an emotional mode.</p>
+            <div class="ae-tags">breaking down the momentos</div>
+          </div>
+          <div class="agent-entry fade-in">
+            <div class="ae-num">02 · Compatibility Agent</div>
+            <div class="ae-name">The Assessor</div>
+            <div class="ae-model">gemini-2.5-flash</div>
+            <p class="ae-desc">For each matched sub-claim pair, Think and Feel questions are answered, each contributing to a final <b>Resonate, Contradict, or Diverge score</b>.</p>
+            <div class="ae-tags">think + feel · per pair scoring</div>
+          </div>
+          <div class="agent-entry fade-in">
+            <div class="ae-num">03 · Aggregator</div>
+            <div class="ae-name">The Scribe</div>
+            <div class="ae-model">pure python</div>
+            <p class="ae-desc">Combines all sub-claim scores into final think/feel <b>R/C/D percentages</b> + dominant result + confidence per reader pair.</p>
+            <div class="ae-tags">weighted avg · dominant R/C/D · confidence</div>
+          </div>
+        </div>
+        <div class="ranking-inset fade-in">
+          <div class="ranking-head">
+            <div class="ranking-lbl">04 · Ranking</div>
+            <div class="ranking-tag">reinforcement learning</div>
+          </div>
+          <div class="ranking-formula">Final Score = (compatibility × w₁) + (reinforcement × w₂)</div>
+          <p class="ranking-prose">New users rank purely on compatibility. Reinforcement weight starts at zero. As users explore, wave, and connect, weights update automatically to surface the readers who matter most.</p>
+          <div class="ranking-note">new user → w₁ = 1.0 · w₂ = 0.0 · weights update with every interaction</div>
+        </div>
+        <div class="fig-label fade-in">Figure I · Example output · Worth page</div>
+        <img src="worth-screenshot.png" alt="Worth page example" class="fade-in" style="width:100%;max-width:720px;display:block;margin:0 auto;border:0.5px solid #3a2c18;" />
+        <div class="sig-box fade-in">
+          <div style="width:50px;flex-shrink:0;">
+            <img src="signature.png" alt="Closeness Signature" style="width:100%;height:auto;display:block;" />
+          </div>
+          <div>
+            <div class="sig-lbl">Closeness Signature</div>
+            <p class="sig-text">The tf glyph appears on every profile card in Worth. It is the visual representation of two readers' interpretive identity bond, filled with colour to show their Resonance, Contradiction and Divergence across Think and Feel dimensions.</p>
+            <p class="sig-key">Green for Resonance. &nbsp; Red for Contradiction. &nbsp; Grey for Divergence.</p>
+          </div>
+        </div>
+        <div class="privacy-inset fade-in">
+          <div class="privacy-head">
+            <span class="privacy-lbl">Privacy Architecture</span>
+            <span class="privacy-icon">⊕</span>
+          </div>
+          <div class="privacy-lines">
+            <div class="privacy-line">Interpretations are never shared without the reader's explicit choice.</div>
+            <div class="privacy-line">The AI pipeline works with anonymous IDs only.</div>
+            <div class="privacy-line">The platform is GDPR and CCPA compliant.</div>
+            <div class="privacy-line privacy-closer">Readers write honestly because the platform is designed to protect that honesty.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPENDIX -->
+    <div class="ch-divider"><div class="ch-ornament">✦ &nbsp; ✦ &nbsp; ✦</div></div>
+    <div class="appendix-page">
+      <div class="appendix-lbl fade-in">Appendix</div>
+      <h2 class="appendix-title fade-in">Ready to scale.</h2>
+      <table class="tech-ledger">
+        <tr class="fade-in"><td class="tl-layer">Frontend</td><td><div class="tl-name">React + Babel</div><div class="chips"><div class="chip">React</div><div class="chip">Babel</div><div class="chip">epub.js</div><div class="chip">DM Sans</div><div class="chip">Playfair Display</div></div></td></tr>
+        <tr class="fade-in"><td class="tl-layer">Backend</td><td><div class="tl-name">FastAPI + Python</div><div class="chips"><div class="chip">FastAPI</div><div class="chip">Python 3.10</div><div class="chip">Airflow</div></div></td></tr>
+        <tr class="fade-in"><td class="tl-layer">ML &amp; AI</td><td><div class="tl-name">Google Gemini</div><div class="chips"><div class="chip">gemini-2.5-flash</div><div class="chip">Decomposing Agent</div><div class="chip">Compatibility Agent</div></div></td></tr>
+        <tr class="fade-in"><td class="tl-layer">Database</td><td><div class="tl-name">PostgreSQL + BigQuery</div><div class="chips"><div class="chip">PostgreSQL</div><div class="chip">pgvector</div><div class="chip">Cloud SQL</div><div class="chip">BigQuery</div></div></td></tr>
+      </table>
+      <p class="appendix-note fade-in">All interpretations anonymously processed via Google Gemini. Your name and identity are never shared.</p>
+    </div>
+
+    <!-- ABOUT ACCORDION -->
+    <div class="logo-accordion-wrap">
+      <button class="logo-accordion-btn" onclick="toggleAboutB(this)" aria-expanded="false">
+        About <span style="display:inline-block;width:90px;overflow:hidden;"><img src="logo.png" alt="momento" style="height:22px;filter:brightness(0.3);margin-left:-28px;margin-top:8px;" /></span> <span class="logo-acc-arrow">↓</span>
+      </button>
+      <div class="logo-accordion-body" id="about-accordion-body-b">
+        <div class="logo-points">
+          <div class="logo-point">
+            <div class="logo-point-content" style="max-width:680px;margin:0 auto;">
+              <p class="logo-point-text" style="text-align:center;">The word momento itself carries meaning in multiple languages. <br>In Italian and Spanish it means moment, an instant in time. In English it echoes memento, an object kept as a memory. The platform name lives at the intersection of both: <br>capturing the moment and making it something you carry forward.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGO ACCORDION -->
+    <div class="logo-accordion-wrap">
+      <button class="logo-accordion-btn" onclick="toggleLogoB(this)" aria-expanded="false">
+        <img src="just-logo.png" alt="momento glyph" style="height:22px;opacity:1;filter:brightness(0.3);" />
+        The Logo <span class="logo-acc-arrow">↓</span>
+      </button>
+      <div class="logo-accordion-body" id="logo-accordion-body-b">
+        <div class="logo-points">
+          <div class="logo-point">
+            <div class="logo-point-num">1</div>
+            <div class="logo-point-content">
+              <div class="logo-point-title">Two Hands Reaching</div>
+              <p class="logo-point-text">The upright <em>t</em> is Think, the analytical dimension of interpretation. The inverted <em>ʃ</em> is Feel, how a passage lands in the body. Together they form two hands reaching toward the same book from opposite sides.</p>
+            </div>
+            <div class="logo-point-img"><img src="opening-page-image.png" alt="Two hands reaching for the same book" /></div>
+          </div>
+          <div class="logo-point">
+            <div class="logo-point-num">2</div>
+            <div class="logo-point-content">
+              <div class="logo-point-title">The Capture Frame</div>
+              <p class="logo-point-text">The <em>t</em> and <em>ʃ</em> together form a rectangle of negative space at their centre. That rectangle is the passage waiting to be captured.</p>
+            </div>
+            <div class="logo-point-img"><img src="capture-frame.jpeg" alt="Capture frame in the Read section" /></div>
+          </div>
+          <div class="logo-point">
+            <div class="logo-point-num">3</div>
+            <div class="logo-point-content">
+              <div class="logo-point-title">The Closeness Signature</div>
+              <p class="logo-point-text">The <em>tʃ</em> glyph appears on every profile card in Worth. <span class="logo-key green">Green</span> for Resonance. <span class="logo-key red">Red</span> for Contradiction. <span class="logo-key grey">Grey</span> for Divergence.</p>
+            </div>
+            <div class="logo-point-img">
+              <svg width="100" height="100" viewBox="-6 9 66 67" preserveAspectRatio="xMidYMid meet">
+                <rect x="-3" y="12" width="46" height="55" rx="10" fill="rgba(180,160,100,0.08)" stroke="#c0b088" stroke-opacity="0.6" stroke-width="1.2"/>
+                <text x="4" y="50" font-family="'Playfair Display',serif" font-weight="700" font-size="42" fill="#5a7a50">t</text>
+                <text x="36" y="50" font-family="'Playfair Display',serif" font-weight="700" font-size="42" fill="#7a4040" transform="translate(72,80) rotate(180)">t</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLOPHON -->
+    <div class="colophon">
+      <div class="colophon-logo"><img src="logo-clean.png" alt="momento" style="height:36px;" /></div>
+      <div class="colophon-tagline">"Read Moments Worth Sharing"</div>
+      <div class="colophon-rule"></div>
+      <div class="colophon-contact">Contact &nbsp;·&nbsp; <span><a href="mailto:themomentofolio@gmail.com" style="color:#7a6040;text-decoration:none;">themomentofolio@gmail.com</a></span></div>
+    </div>
+
+    </div><!-- end .brochure-wrap -->
+  </div><!-- end #brochure-overlay -->
+
+  <script>
+// Hide "Learn More" wherever it appears
+    const hideLearnMore = () => {
+      let found = false;
+      document.querySelectorAll('#root *').forEach(el => {
+        if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3 && el.textContent.trim() === 'Learn More') {
+          el.style.display = 'none';
+          found = true;
+        }
+      });
+      return found;
+    };
+    const lmInterval = setInterval(() => { if (hideLearnMore()) clearInterval(lmInterval); }, 100);
+
+    // Persistent observer: always hide React's Enter button + preview element,
+    // and inject static preview copy into "New to Momento?" card whenever it appears
+    const domObserver = new MutationObserver(() => {
+      document.querySelectorAll('#root *').forEach(el => {
+        // Hide React Enter button
+        if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3 && el.textContent.trim() === 'Enter') {
+          if (el.parentElement) el.parentElement.style.display = 'none';
+        }
+        // Always hide original React preview element
+        if (el.style && el.style.bottom === '22px' && el.style.zIndex === '800') {
+          el.style.display = 'none';
+        }
+      });
+      // Activate gap UI (logo shrink + tagline) when "Your first chapter is open." card is visible
+      let h3El = null;
+      document.querySelectorAll('#root H3').forEach(el => {
+        if (el.textContent.trim() === 'Your first chapter is open.') h3El = el;
+      });
+      if (h3El) {
+        activateGapUI();
+      } else {
+        // card is gone — deactivate gap UI if brochure is also closed
+        if (!document.getElementById('brochure-overlay').classList.contains('open')) {
+          deactivateGapUI();
+        }
+      }
+    });
+    domObserver.observe(document.getElementById('root'), { childList: true, subtree: true });
+    // Run once immediately for elements already in DOM
+    domObserver.takeRecords && domObserver.takeRecords();
+    document.querySelectorAll('#root *').forEach(el => {
+      if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3 && el.textContent.trim() === 'Enter') {
+        if (el.parentElement) el.parentElement.style.display = 'none';
+      }
+      if (el.style && el.style.bottom === '22px' && el.style.zIndex === '800') el.style.display = 'none';
+    });
+
+    function hideOpeningUI() {
+      document.getElementById('scroll-down-btn').style.display = 'none';
+      document.getElementById('gap-enter').style.display = 'none';
+      document.getElementById('brochure-tagline').style.display = 'none';
+      closeBrochure();
+    }
+    function triggerEnter() {
+      document.querySelectorAll('#root *').forEach(el => {
+        if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3 && el.textContent.trim() === 'Enter')
+          el.click();
+      });
+      // hide scroll btn and ENTER button, but keep logo + tagline visible
+      document.getElementById('scroll-down-btn').style.display = 'none';
+      document.getElementById('gap-enter').style.display = 'none';
+      activateGapUI();
+    }
+    // Show button only while opening page is truly visible
+    function isOpeningVisible() {
+      const logo = document.querySelector('[data-opening-logo]');
+      if (!logo) return false;
+      let el = logo;
+      while (el && el !== document.body) {
+        const s = window.getComputedStyle(el);
+        if (s.display === 'none' || s.visibility === 'hidden' || parseFloat(s.opacity) < 0.1) return false;
+        el = el.parentElement;
+      }
+      // also check nothing is covering it at its center point
+      const r = logo.getBoundingClientRect();
+      const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return top ? logo.contains(top) || logo === top : false;
+    }
+    const openingWatcher = setInterval(() => {
+      const btn = document.getElementById('scroll-down-btn');
+      const enterBtn = document.getElementById('gap-enter');
+      if (isOpeningVisible()) {
+        btn.style.display = 'flex';
+        enterBtn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+        enterBtn.style.display = 'none';
+        hideOpeningUI();
+      }
+    }, 200);
+    function activateGapUI() {
+      document.getElementById('brochure-tagline').style.opacity = '1';
+      const logo = document.querySelector('[data-opening-logo]');
+      if (logo && logo.parentElement) {
+        const c = logo.parentElement;
+        c.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1)';
+        c.style.transformOrigin = 'top left';
+        c.style.transform = 'scale(0.52) translateY(-28px)';
+      }
+    }
+    function deactivateGapUI() {
+      document.getElementById('brochure-tagline').style.opacity = '0';
+      const logo = document.querySelector('[data-opening-logo]');
+      if (logo && logo.parentElement) {
+        logo.parentElement.style.transform = 'scale(1)';
+      }
+    }
+    function openBrochure() {
+      document.getElementById('brochure-overlay').classList.add('open');
+      document.getElementById('gap-enter').style.display = 'flex';
+      document.getElementById('brochure-yt').src = 'https://www.youtube.com/embed/jxJVwrKMf04?rel=0';
+      activateGapUI();
+    }
+    function closeBrochure() {
+      document.getElementById('brochure-overlay').classList.remove('open');
+      document.getElementById('gap-enter').style.display = 'none';
+      document.getElementById('brochure-yt').src = '';
+      deactivateGapUI();
+    }
+
+    const brochureObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          brochureObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.brochure-wrap .fade-in').forEach(el => brochureObserver.observe(el));
+
+    function toggleLogoB(btn) {
+      const body = document.getElementById('logo-accordion-body-b');
+      const open = body.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+    }
+    function toggleAboutB(btn) {
+      const body = document.getElementById('about-accordion-body-b');
+      const open = body.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+    }
+  </script>
 </body>
 </html>
