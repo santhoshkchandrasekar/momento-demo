@@ -648,97 +648,73 @@ img[data-opening-logo] {
       btn.setAttribute('aria-expanded', open);
     }
 
-    // ── Logo snip-capture animation ──
-    let snapDone = false;
-    function runSnapAnimation(logo) {
-      if (snapDone) return;
-      snapDone = true;
+    // ── Splash screen capture animation ──
+    (function() {
+      const splash = document.createElement('div');
+      splash.id = 'splash-screen';
+      splash.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#0e0a05;display:flex;align-items:center;justify-content:center;flex-direction:column;';
 
-      // Hide logo initially
-      logo.style.opacity = '0';
+      const logoEl = document.createElement('img');
+      logoEl.src = './just logo.png';
+      logoEl.style.cssText = 'width:min(180px,42vw);height:auto;opacity:0;transform:scale(0.88);transition:opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);filter:brightness(0) invert(1) sepia(0.3) saturate(1.4);';
+      splash.appendChild(logoEl);
 
-      const r = logo.getBoundingClientRect();
-      const pad = window.innerWidth <= 768 ? 10 : 18;
-      const x = r.left - pad;
-      const y = r.top - pad;
-      const w = r.width + pad * 2;
-      const h = r.height + pad * 2;
-      const perimeter = 2 * (w + h);
+      // Flash overlay
+      const flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;inset:0;background:white;opacity:0;pointer-events:none;z-index:1000000;transition:opacity 0.08s ease;';
+      document.body.appendChild(flash);
+      document.body.appendChild(splash);
 
-      // Build SVG
-      const ns = 'http://www.w3.org/2000/svg';
-      const svg = document.createElementNS(ns, 'svg');
-      svg.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99999;overflow:visible;';
-
-      // Corner tick marks
-      const tickLen = 10, tickGap = 3, stroke = 'rgba(240,200,80,0.9)', sw = 1.5;
-      const corners = [
-        [[x+tickGap, y], [x+tickGap+tickLen, y], [x+tickGap, y], [x+tickGap, y+tickLen]],
-        [[x+w-tickGap-tickLen, y], [x+w-tickGap, y], [x+w-tickGap, y], [x+w-tickGap, y+tickLen]],
-        [[x+tickGap, y+h], [x+tickGap+tickLen, y+h], [x+tickGap, y+h-tickLen], [x+tickGap, y+h]],
-        [[x+w-tickGap-tickLen, y+h], [x+w-tickGap, y+h], [x+w-tickGap, y+h-tickLen], [x+w-tickGap, y+h]],
-      ];
-      corners.forEach(([[x1,y1],[x2,y2],[x3,y3],[x4,y4]]) => {
-        [[x1,y1,x2,y2],[x3,y3,x4,y4]].forEach(([ax,ay,bx,by]) => {
-          const l = document.createElementNS(ns,'line');
-          l.setAttribute('x1',ax); l.setAttribute('y1',ay);
-          l.setAttribute('x2',bx); l.setAttribute('y2',by);
-          l.setAttribute('stroke',stroke); l.setAttribute('stroke-width',sw);
-          l.style.opacity = '0';
-          svg.appendChild(l);
-        });
-      });
-
-      // Main dashed rect
-      const rect = document.createElementNS(ns, 'rect');
-      rect.setAttribute('x', x); rect.setAttribute('y', y);
-      rect.setAttribute('width', w); rect.setAttribute('height', h);
-      rect.setAttribute('rx', '4');
-      rect.setAttribute('fill', 'none');
-      rect.setAttribute('stroke', stroke);
-      rect.setAttribute('stroke-width', sw);
-      rect.setAttribute('stroke-dasharray', `${perimeter}`);
-      rect.setAttribute('stroke-dashoffset', `${perimeter}`);
-      svg.appendChild(rect);
-      document.body.appendChild(svg);
-
-      // Step 1: flash corner ticks in
-      setTimeout(() => {
-        svg.querySelectorAll('line').forEach(l => {
-          l.style.transition = 'opacity 0.15s ease';
-          l.style.opacity = '1';
-        });
-      }, 80);
-
-      // Step 2: draw the rect
-      setTimeout(() => {
-        rect.style.transition = `stroke-dashoffset 0.85s cubic-bezier(0.4,0,0.2,1)`;
-        rect.setAttribute('stroke-dashoffset', '0');
-      }, 200);
-
-      // Step 3: fade in logo
-      setTimeout(() => {
-        logo.style.transition = 'opacity 0.45s ease';
-        logo.style.opacity = '1';
-      }, 1050);
-
-      // Step 4: fade out SVG
-      setTimeout(() => {
-        svg.style.transition = 'opacity 0.5s ease';
-        svg.style.opacity = '0';
-        setTimeout(() => svg.remove(), 550);
-      }, 1350);
-    }
-
-    function waitForLogo() {
-      const logo = document.querySelector('[data-opening-logo]');
-      if (logo && logo.getBoundingClientRect().width > 0) {
-        runSnapAnimation(logo);
-      } else {
-        setTimeout(waitForLogo, 80);
+      function playShutter() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const sr = ctx.sampleRate;
+          // Mechanical shutter: sharp click + short mechanical tail
+          const buf = ctx.createBuffer(1, sr * 0.18, sr);
+          const d = buf.getChannelData(0);
+          for (let i = 0; i < d.length; i++) {
+            const t = i / sr;
+            const click = Math.exp(-t * 120) * (Math.random() * 2 - 1);
+            const tail  = Math.exp(-t * 28)  * (Math.random() * 2 - 1) * 0.35;
+            d[i] = click + tail;
+          }
+          const gain = ctx.createGain();
+          gain.gain.value = 0.7;
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(gain);
+          gain.connect(ctx.destination);
+          src.start();
+        } catch(e) {}
       }
-    }
-    setTimeout(waitForLogo, 100);
+
+      // Step 1: fade logo in
+      setTimeout(() => {
+        logoEl.style.opacity = '1';
+        logoEl.style.transform = 'scale(1)';
+      }, 120);
+
+      // Step 2: shutter sound + flash
+      setTimeout(() => {
+        playShutter();
+        flash.style.opacity = '0.85';
+        setTimeout(() => { flash.style.opacity = '0'; }, 80);
+      }, 820);
+
+      // Step 3: logo shrinks slightly (captured)
+      setTimeout(() => {
+        logoEl.style.transition = 'transform 0.18s cubic-bezier(0.4,0,0.6,1), opacity 0.18s ease';
+        logoEl.style.transform = 'scale(0.92)';
+      }, 860);
+
+      // Step 4: splash fades out
+      setTimeout(() => {
+        splash.style.transition = 'opacity 0.5s ease';
+        splash.style.opacity = '0';
+        flash.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => { splash.remove(); flash.remove(); }, 520);
+      }, 1100);
+    })();
   </script>
 </body>
 </html>
