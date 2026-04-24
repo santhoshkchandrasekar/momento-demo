@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="./src/styles/app.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+:root { color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  img[data-opening-logo] { filter: brightness(0) invert(1) !important; -webkit-filter: brightness(0) invert(1) !important; }
+}
 /* Brochure overlay */
 #brochure-overlay {
   position: fixed; top: 60px; left: 0; right: 0; bottom: 0;
