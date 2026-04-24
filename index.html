@@ -650,18 +650,29 @@ img[data-opening-logo] {
 
     // ── Splash screen capture animation ──
     (function() {
+      const vw = window.innerWidth, vh = window.innerHeight;
+
+      // Base: dim opening image
       const splash = document.createElement('div');
-      splash.id = 'splash-screen';
-      splash.style.cssText = 'position:fixed;inset:0;z-index:999999;background:url("./opening page image.png") center center/cover no-repeat;';
+      splash.style.cssText = 'position:fixed;inset:0;z-index:999999;background:url("./opening page image.png") center/cover;';
+      const dimOverlay = document.createElement('div');
+      dimOverlay.style.cssText = 'position:absolute;inset:0;background:rgba(8,4,1,0.68);';
+      splash.appendChild(dimOverlay);
+
+      // Bright layer — same image, clipped to rect (starts invisible)
+      const brightLayer = document.createElement('div');
+      brightLayer.style.cssText = 'position:absolute;inset:0;background:url("./opening page image.png") center/cover;opacity:0;transition:opacity 0.25s ease;';
+      splash.appendChild(brightLayer);
+
       document.body.appendChild(splash);
 
-      // Logo (hidden initially)
+      // Logo — hidden, centered
       const logoEl = document.createElement('img');
       logoEl.src = './logo-clean.png';
-      logoEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(480px,80vw);height:auto;opacity:0;z-index:1000001;transition:opacity 0.45s ease;';
+      logoEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(440px,76vw);height:auto;opacity:0;z-index:1000001;transition:opacity 0.4s ease;';
       document.body.appendChild(logoEl);
 
-      // Flash overlay
+      // Flash
       const flash = document.createElement('div');
       flash.style.cssText = 'position:fixed;inset:0;background:white;opacity:0;pointer-events:none;z-index:1000002;';
       document.body.appendChild(flash);
@@ -682,60 +693,58 @@ img[data-opening-logo] {
         } catch(e) {}
       }
 
-      // Step 1: after brief pause, draw dashed snip rectangle
-      setTimeout(() => {
-        const vw = window.innerWidth, vh = window.innerHeight;
-        const rectW = Math.min(500, vw * 0.82);
-        const rectH = rectW * 0.36;
+      logoEl.onload = function() {
+        const logoW = Math.min(440, vw * 0.76);
+        const logoH = logoW * (logoEl.naturalHeight / logoEl.naturalWidth);
+        const pad = 14;
+        const rectW = logoW + pad * 2;
+        const rectH = logoH + pad * 2;
         const rx = (vw - rectW) / 2;
         const ry = (vh - rectH) / 2;
         const perimeter = 2 * (rectW + rectH);
 
+        // Clip bright layer to rect area
+        brightLayer.style.clipPath = `inset(${ry}px ${vw - rx - rectW}px ${vh - ry - rectH}px ${rx}px round 6px)`;
+
+        // SVG dashed rect
         const ns = 'http://www.w3.org/2000/svg';
         const svg = document.createElementNS(ns, 'svg');
         svg.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1000000;overflow:visible;';
-
         const rect = document.createElementNS(ns, 'rect');
         rect.setAttribute('x', rx); rect.setAttribute('y', ry);
         rect.setAttribute('width', rectW); rect.setAttribute('height', rectH);
-        rect.setAttribute('rx', '6');
-        rect.setAttribute('fill', 'none');
-        rect.setAttribute('stroke', 'rgba(248,232,195,0.9)');
+        rect.setAttribute('rx', '6'); rect.setAttribute('fill', 'none');
+        rect.setAttribute('stroke', 'rgba(248,232,195,0.92)');
         rect.setAttribute('stroke-width', '1.5');
         rect.setAttribute('stroke-dasharray', '10 5');
         rect.setAttribute('stroke-dashoffset', `${perimeter}`);
-        rect.style.transition = `stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1)`;
+        rect.style.transition = `stroke-dashoffset 0.85s cubic-bezier(0.4,0,0.2,1)`;
         svg.appendChild(rect);
         document.body.appendChild(svg);
 
-        // Draw the rect
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          rect.setAttribute('stroke-dashoffset', '0');
-        }));
-
-        // Step 2: rect fully drawn — shutter + flash + logo appears
+        // Step 1: start drawing rect + reveal bright bg inside
         setTimeout(() => {
-          playShutter();
-          flash.style.transition = 'opacity 0.07s ease';
-          flash.style.opacity = '0.7';
-          setTimeout(() => {
-            flash.style.transition = 'opacity 0.25s ease';
-            flash.style.opacity = '0';
-          }, 70);
-          logoEl.style.opacity = '1';
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            rect.setAttribute('stroke-dashoffset', '0');
+            brightLayer.style.opacity = '1';
+          }));
 
-          // Step 3: hold, then fade everything out
+          // Step 2: rect drawn → shutter + flash + logo
           setTimeout(() => {
-            splash.style.transition = 'opacity 0.55s ease';
-            splash.style.opacity = '0';
-            svg.style.transition = 'opacity 0.55s ease';
-            svg.style.opacity = '0';
-            logoEl.style.transition = 'opacity 0.55s ease';
-            logoEl.style.opacity = '0';
-            setTimeout(() => { splash.remove(); svg.remove(); logoEl.remove(); flash.remove(); }, 600);
+            playShutter();
+            flash.style.transition = 'opacity 0.07s ease';
+            flash.style.opacity = '0.65';
+            setTimeout(() => { flash.style.transition = 'opacity 0.22s ease'; flash.style.opacity = '0'; }, 70);
+            logoEl.style.opacity = '1';
+
+            // Step 3: hold then fade all out
+            setTimeout(() => {
+              [splash, svg, logoEl].forEach(el => { el.style.transition = 'opacity 0.55s ease'; el.style.opacity = '0'; });
+              setTimeout(() => { splash.remove(); svg.remove(); logoEl.remove(); flash.remove(); }, 600);
+            }, 950);
           }, 900);
-        }, 950);
-      }, 400);
+        }, 450);
+      };
     })();
   </script>
 </body>
