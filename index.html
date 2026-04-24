@@ -520,7 +520,6 @@ img[data-opening-logo] {
     };
     const lmInterval = setInterval(() => { if (hideLearnMore()) clearInterval(lmInterval); }, 100);
 
-    let guidePromptSeen = false;
     let welcomeShown = false;
 
     function showWelcomeAnimation() {
@@ -578,18 +577,15 @@ img[data-opening-logo] {
         if (el.textContent.trim() === 'Your first chapter is open.') h3El = el;
       });
       if (h3El) {
-        guidePromptSeen = true;
         activateGapUI();
       } else {
-        // card is gone — deactivate gap UI if brochure is also closed
         if (!document.getElementById('brochure-overlay').classList.contains('open')) {
           deactivateGapUI();
         }
-        // If guide prompt was seen and now gone → user entered the platform
-        if (guidePromptSeen) {
-          guidePromptSeen = false;
-          showWelcomeAnimation();
-        }
+      }
+      // Trigger welcome when first section panel enters the DOM
+      if (!welcomeShown && document.querySelector('#root [data-section]')) {
+        showWelcomeAnimation();
       }
     });
     domObserver.observe(document.getElementById('root'), { childList: true, subtree: true });
