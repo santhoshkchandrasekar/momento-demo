@@ -652,73 +652,90 @@ img[data-opening-logo] {
     (function() {
       const splash = document.createElement('div');
       splash.id = 'splash-screen';
-      splash.style.cssText = 'position:fixed;inset:0;z-index:999999;background:url("./opening page image.png") center center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+      splash.style.cssText = 'position:fixed;inset:0;z-index:999999;background:url("./opening page image.png") center center/cover no-repeat;';
+      document.body.appendChild(splash);
 
-      // Dark overlay so logo pops
-      const overlay = document.createElement('div');
-      overlay.style.cssText = 'position:absolute;inset:0;background:rgba(10,6,2,0.45);';
-      splash.appendChild(overlay);
-
+      // Logo (hidden initially)
       const logoEl = document.createElement('img');
       logoEl.src = './logo-clean.png';
-      logoEl.style.cssText = 'position:relative;width:min(640px,94vw);height:auto;opacity:0;transform:scale(0.88);transition:opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);';
-      splash.appendChild(logoEl);
+      logoEl.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(480px,80vw);height:auto;opacity:0;z-index:1000001;transition:opacity 0.45s ease;';
+      document.body.appendChild(logoEl);
 
       // Flash overlay
       const flash = document.createElement('div');
-      flash.style.cssText = 'position:fixed;inset:0;background:white;opacity:0;pointer-events:none;z-index:1000000;transition:opacity 0.08s ease;';
+      flash.style.cssText = 'position:fixed;inset:0;background:white;opacity:0;pointer-events:none;z-index:1000002;';
       document.body.appendChild(flash);
-      document.body.appendChild(splash);
 
       function playShutter() {
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)();
           const sr = ctx.sampleRate;
-          // Mechanical shutter: sharp click + short mechanical tail
           const buf = ctx.createBuffer(1, sr * 0.18, sr);
           const d = buf.getChannelData(0);
           for (let i = 0; i < d.length; i++) {
             const t = i / sr;
-            const click = Math.exp(-t * 120) * (Math.random() * 2 - 1);
-            const tail  = Math.exp(-t * 28)  * (Math.random() * 2 - 1) * 0.35;
-            d[i] = click + tail;
+            d[i] = Math.exp(-t * 120) * (Math.random() * 2 - 1) + Math.exp(-t * 28) * (Math.random() * 2 - 1) * 0.35;
           }
-          const gain = ctx.createGain();
-          gain.gain.value = 0.7;
-          const src = ctx.createBufferSource();
-          src.buffer = buf;
-          src.connect(gain);
-          gain.connect(ctx.destination);
-          src.start();
+          const gain = ctx.createGain(); gain.gain.value = 0.7;
+          const src = ctx.createBufferSource(); src.buffer = buf;
+          src.connect(gain); gain.connect(ctx.destination); src.start();
         } catch(e) {}
       }
 
-      // Step 1: fade logo in
+      // Step 1: after brief pause, draw dashed snip rectangle
       setTimeout(() => {
-        logoEl.style.opacity = '1';
-        logoEl.style.transform = 'scale(1)';
-      }, 120);
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const rectW = Math.min(500, vw * 0.82);
+        const rectH = rectW * 0.36;
+        const rx = (vw - rectW) / 2;
+        const ry = (vh - rectH) / 2;
+        const perimeter = 2 * (rectW + rectH);
 
-      // Step 2: shutter sound + flash
-      setTimeout(() => {
-        playShutter();
-        flash.style.opacity = '0.85';
-        setTimeout(() => { flash.style.opacity = '0'; }, 80);
-      }, 820);
+        const ns = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(ns, 'svg');
+        svg.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1000000;overflow:visible;';
 
-      // Step 3: logo shrinks slightly (captured)
-      setTimeout(() => {
-        logoEl.style.transition = 'transform 0.18s cubic-bezier(0.4,0,0.6,1), opacity 0.18s ease';
-        logoEl.style.transform = 'scale(0.92)';
-      }, 860);
+        const rect = document.createElementNS(ns, 'rect');
+        rect.setAttribute('x', rx); rect.setAttribute('y', ry);
+        rect.setAttribute('width', rectW); rect.setAttribute('height', rectH);
+        rect.setAttribute('rx', '6');
+        rect.setAttribute('fill', 'none');
+        rect.setAttribute('stroke', 'rgba(248,232,195,0.9)');
+        rect.setAttribute('stroke-width', '1.5');
+        rect.setAttribute('stroke-dasharray', '10 5');
+        rect.setAttribute('stroke-dashoffset', `${perimeter}`);
+        rect.style.transition = `stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1)`;
+        svg.appendChild(rect);
+        document.body.appendChild(svg);
 
-      // Step 4: splash fades out
-      setTimeout(() => {
-        splash.style.transition = 'opacity 0.5s ease';
-        splash.style.opacity = '0';
-        flash.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => { splash.remove(); flash.remove(); }, 520);
-      }, 1100);
+        // Draw the rect
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          rect.setAttribute('stroke-dashoffset', '0');
+        }));
+
+        // Step 2: rect fully drawn — shutter + flash + logo appears
+        setTimeout(() => {
+          playShutter();
+          flash.style.transition = 'opacity 0.07s ease';
+          flash.style.opacity = '0.7';
+          setTimeout(() => {
+            flash.style.transition = 'opacity 0.25s ease';
+            flash.style.opacity = '0';
+          }, 70);
+          logoEl.style.opacity = '1';
+
+          // Step 3: hold, then fade everything out
+          setTimeout(() => {
+            splash.style.transition = 'opacity 0.55s ease';
+            splash.style.opacity = '0';
+            svg.style.transition = 'opacity 0.55s ease';
+            svg.style.opacity = '0';
+            logoEl.style.transition = 'opacity 0.55s ease';
+            logoEl.style.opacity = '0';
+            setTimeout(() => { splash.remove(); svg.remove(); logoEl.remove(); flash.remove(); }, 600);
+          }, 900);
+        }, 950);
+      }, 400);
     })();
   </script>
 </body>
