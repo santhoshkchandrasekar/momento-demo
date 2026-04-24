@@ -11,8 +11,11 @@
   <style>
 :root { color-scheme: only light; }
 html { color-scheme: only light; }
-@media (prefers-color-scheme: dark) {
-  img[data-opening-logo] { filter: brightness(0) invert(1) !important; -webkit-filter: brightness(0) invert(1) !important; }
+img[data-opening-logo] {
+  filter: brightness(0) invert(1) !important;
+  -webkit-filter: brightness(0) invert(1) !important;
+  color-scheme: light !important;
+  forced-color-adjust: none;
 }
 /* Brochure overlay */
 #brochure-overlay {
