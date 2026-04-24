@@ -185,7 +185,6 @@ html { color-scheme: only light; }
 .brochure-wrap .logo-point-img { flex-shrink: 0; width: 200px; display: flex; align-items: center; justify-content: center; border-left: 0.5px solid #c0b088; padding-left: 24px; margin-left: 12px; }
 .brochure-wrap .logo-point-img img { width: 100%; height: auto; display: block; border: 0.5px solid #c0b088; }
 @media (max-width: 680px) {
-  #brochure-tagline { display: none !important; }
   .brochure-wrap .title-page, .brochure-wrap .ch-header, .brochure-wrap .appendix-page { padding-left: 24px; padding-right: 24px; }
   .brochure-wrap .book-title { font-size: 49px; }
   .brochure-wrap .book-subtitle { font-size: 16px; white-space: normal; }
@@ -203,7 +202,6 @@ html { color-scheme: only light; }
   .brochure-wrap .dark-chapter { padding: 56px 24px; }
   .brochure-wrap .logo-point { flex-direction: column; gap: 16px; }
   .brochure-wrap .logo-point-img { width: 100% !important; max-width: 200px; align-self: center; }
-  #brochure-tagline span { font-size: 15px !important; }
 }
   </style>
 </head>
@@ -249,16 +247,6 @@ html { color-scheme: only light; }
   </div>
 
   <!-- gap strip shown when brochure is open -->
-  <div id="brochure-tagline" style="
-    position: fixed; top: 0; left: 0; right: 0; height: 60px;
-    z-index: 99998;
-    display: flex; align-items: center;
-    padding: 0 20px;
-    opacity: 0; transition: opacity 0.5s ease; pointer-events: none;">
-    <div style="flex:1; display:flex; justify-content:center;">
-      <span style="font-family:'Playfair Display',serif; font-size:22px; font-style:italic; letter-spacing:0.04em; color:rgba(255,248,234,0.92);">Read Moments Worth Sharing</span>
-    </div>
-  </div>
 
   <!-- trigger button — hidden until opening page is confirmed visible -->
   <div id="scroll-down-btn" onclick="openBrochure()"
@@ -568,7 +556,6 @@ html { color-scheme: only light; }
     function hideOpeningUI() {
       document.getElementById('scroll-down-btn').style.display = 'none';
       document.getElementById('gap-enter').style.display = 'none';
-      document.getElementById('brochure-tagline').style.display = 'none';
       closeBrochure();
     }
     function triggerEnter() {
@@ -609,7 +596,6 @@ html { color-scheme: only light; }
       }
     }, 200);
     function activateGapUI() {
-      document.getElementById('brochure-tagline').style.opacity = '1';
       const logo = document.querySelector('[data-opening-logo]');
       if (logo && logo.parentElement) {
         const c = logo.parentElement;
@@ -619,7 +605,6 @@ html { color-scheme: only light; }
       }
     }
     function deactivateGapUI() {
-      document.getElementById('brochure-tagline').style.opacity = '0';
       const logo = document.querySelector('[data-opening-logo]');
       if (logo && logo.parentElement) {
         logo.parentElement.style.transform = 'scale(1)';
