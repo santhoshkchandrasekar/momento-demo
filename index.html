@@ -652,11 +652,16 @@ img[data-opening-logo] {
     (function() {
       const splash = document.createElement('div');
       splash.id = 'splash-screen';
-      splash.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#0e0a05;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+      splash.style.cssText = 'position:fixed;inset:0;z-index:999999;background:url("./opening page image.png") center center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+
+      // Dark overlay so logo pops
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:absolute;inset:0;background:rgba(10,6,2,0.45);';
+      splash.appendChild(overlay);
 
       const logoEl = document.createElement('img');
       logoEl.src = './just logo.png';
-      logoEl.style.cssText = 'width:min(180px,42vw);height:auto;opacity:0;transform:scale(0.88);transition:opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);filter:brightness(0) invert(1) sepia(0.3) saturate(1.4);';
+      logoEl.style.cssText = 'position:relative;width:min(320px,68vw);height:auto;opacity:0;transform:scale(0.88);transition:opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);filter:brightness(0) invert(1) sepia(0.3) saturate(1.4);';
       splash.appendChild(logoEl);
 
       // Flash overlay
