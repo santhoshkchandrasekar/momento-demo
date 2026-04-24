@@ -718,7 +718,7 @@ img[data-opening-logo] {
         rect.setAttribute('stroke-width', '1.5');
         rect.setAttribute('stroke-dasharray', '10 5');
         rect.setAttribute('stroke-dashoffset', `${perimeter}`);
-        rect.style.transition = `stroke-dashoffset 0.85s cubic-bezier(0.4,0,0.2,1)`;
+        rect.style.transition = `stroke-dashoffset 0.45s cubic-bezier(0.4,0,0.2,1)`;
         svg.appendChild(rect);
         document.body.appendChild(svg);
 
@@ -739,11 +739,11 @@ img[data-opening-logo] {
 
             // Step 3: hold then fade all out
             setTimeout(() => {
-              [splash, svg, logoEl].forEach(el => { el.style.transition = 'opacity 0.55s ease'; el.style.opacity = '0'; });
-              setTimeout(() => { splash.remove(); svg.remove(); logoEl.remove(); flash.remove(); }, 600);
-            }, 950);
-          }, 900);
-        }, 450);
+              [splash, svg, logoEl].forEach(el => { el.style.transition = 'opacity 0.35s ease'; el.style.opacity = '0'; });
+              setTimeout(() => { splash.remove(); svg.remove(); logoEl.remove(); flash.remove(); }, 380);
+            }, 500);
+          }, 480);
+        }, 200);
       };
     })();
   </script>
