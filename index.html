@@ -1972,6 +1972,8 @@ button[aria-label="Watch Momento demo"] { display: none !important; }
       return top ? logo.contains(top) || logo === top || !!top.closest('div[style*="z-index: 740"]') || !!top.closest('div[style*="bottom: 20px"][style*="left: 20px"]') : false;
     }
     const openingWatcher = setInterval(() => {
+      // a video playing full screen covers everything: that is not the reader leaving, so change nothing
+      if (document.fullscreenElement || document.webkitFullscreenElement) return;
       const btn = document.getElementById('scroll-down-btn');
       const enterBtn = document.getElementById('gap-enter');
       if (isOpeningVisible()) {
